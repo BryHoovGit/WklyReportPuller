@@ -1,3 +1,6 @@
+# TO DO ADD logic for grabbing task count and arrays per squad, using status filters THEN use those task ID arrays to grab matches for CF values (Prio levels)
+# TO DO add logic for mapping squad CF from order-index to UUID
+
 import requests
 import dotenv
 import os
@@ -82,30 +85,44 @@ epd_prio_filter_null = {
     "operator": "IS NULL"
 }
 
+epd_squad_filter_1 = {
+    "field_id": SQUAD_DD,
+    "value": "b970f332-26b3-461d-b100-f6771e77b6fa",
+    "operator": "="
+}
+
+epd_squad_filter_2 = {
+    "field_id": SQUAD_DD,
+    "value": "ab3f83fe-9985-490a-af30-3d46d2ce8afb",
+    "operator": "="
+}
+
 # Stringify the JSON object
 json_string = json.dumps([epd_prio_filter_p0])
 json_string_p1 = json.dumps([epd_prio_filter_p1])
 json_string_other = json.dumps([epd_prio_filter_other])
 json_string_null = json.dumps([epd_prio_filter_null])
 
+api_get_filtered_task = f'https://api.clickup.com/api/v2/team/{TEAM_ID}/task?space_ids[]={SPACE_ID}&statuses[]={STATUSES}&custom_fields='
+
 # Make the GET request to the ClickUp API to get the filtered team tasks
 filtered_team_tasks_response = requests.get(
-    f'https://api.clickup.com/api/v2/team/{TEAM_ID}/task?space_ids[]={SPACE_ID}&statuses[]={STATUSES}&custom_fields={json_string}',
+    f'{api_get_filtered_task}{json_string}',
     headers=headers
 )
 
 filtered_team_tasks_response_p1 = requests.get(
-    f'https://api.clickup.com/api/v2/team/{TEAM_ID}/task?space_ids[]={SPACE_ID}&statuses[]={STATUSES}&custom_fields={json_string_p1}',
+    f'{api_get_filtered_task}{json_string_p1}',
     headers=headers
 )
 
 filtered_team_tasks_response_other = requests.get(
-    f'https://api.clickup.com/api/v2/team/{TEAM_ID}/task?space_ids[]={SPACE_ID}&statuses[]={STATUSES}&custom_fields={json_string_other}',
+    f'{api_get_filtered_task}{json_string_other}',
     headers=headers
 )
 
 filtered_team_tasks_response_null = requests.get(
-    f'https://api.clickup.com/api/v2/team/{TEAM_ID}/task?space_ids[]={SPACE_ID}&statuses[]={STATUSES}&custom_fields={json_string_null}',
+    f'{api_get_filtered_task}{json_string_null}',
     headers=headers
 )
 
